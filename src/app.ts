@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { env } from './config/env';
+import authRoutes from './routes/auth.routes';
 
 const app: Application = express();
 
@@ -54,8 +55,16 @@ app.get('/', (_req: Request, res: Response) => {
     version: env.API_VERSION,
     documentation: '/api-docs',
     health: '/health',
+    endpoints: {
+      auth: '/api/v1/auth',
+    },
   });
 });
+
+// ============================================
+// API ROUTES
+// ============================================
+app.use('/api/v1/auth', authRoutes);
 
 // ============================================
 // 404 HANDLER

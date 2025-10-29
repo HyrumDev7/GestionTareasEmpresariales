@@ -8,6 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
 const env_1 = require("./config/env");
+const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const app = (0, express_1.default)();
 app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)({
@@ -37,8 +38,12 @@ app.get('/', (_req, res) => {
         version: env_1.env.API_VERSION,
         documentation: '/api-docs',
         health: '/health',
+        endpoints: {
+            auth: '/api/v1/auth',
+        },
     });
 });
+app.use('/api/v1/auth', auth_routes_1.default);
 app.use((_req, res) => {
     res.status(404).json({
         error: 'Not Found',
