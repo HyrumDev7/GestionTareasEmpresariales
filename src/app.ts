@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { env } from './config/env';
 import authRoutes from './routes/auth.routes';
+import projectRoutes from './routes/project.routes';
 
 const app: Application = express();
 
@@ -65,6 +66,7 @@ app.get('/', (_req: Request, res: Response) => {
 // API ROUTES
 // ============================================
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/projects', projectRoutes);
 
 // ============================================
 // 404 HANDLER
