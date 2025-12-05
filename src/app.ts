@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import { env } from './config/env';
 import authRoutes from './routes/auth.routes';
 import projectRoutes from './routes/project.routes';
+import taskRoutes from './routes/task.routes';
 
 const app: Application = express();
 
@@ -67,6 +68,7 @@ app.get('/', (_req: Request, res: Response) => {
 // ============================================
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/projects', projectRoutes);
+app.use('/api/v1/tasks', taskRoutes);
 
 // ============================================
 // 404 HANDLER
