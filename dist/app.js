@@ -11,6 +11,7 @@ const env_1 = require("./config/env");
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const project_routes_1 = __importDefault(require("./routes/project.routes"));
 const task_routes_1 = __importDefault(require("./routes/task.routes"));
+const ai_routes_1 = __importDefault(require("./routes/ai.routes"));
 const app = (0, express_1.default)();
 app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)({
@@ -42,12 +43,20 @@ app.get('/', (_req, res) => {
         health: '/health',
         endpoints: {
             auth: '/api/v1/auth',
+            projects: '/api/v1/projects',
+            tasks: '/api/v1/tasks',
+            ai: '/api/v1/ai',
+        },
+        features: {
+            aiPowered: true,
+            model: 'GPT-3.5-turbo',
         },
     });
 });
 app.use('/api/v1/auth', auth_routes_1.default);
 app.use('/api/v1/projects', project_routes_1.default);
 app.use('/api/v1/tasks', task_routes_1.default);
+app.use('/api/v1/ai', ai_routes_1.default);
 app.use((_req, res) => {
     res.status(404).json({
         error: 'Not Found',

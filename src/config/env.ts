@@ -29,6 +29,9 @@ const envSchema = z.object({
 
   // Logging
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
+
+  // OpenAI (AGREGAR AQUÍ, dentro del schema)
+  OPENAI_API_KEY: z.string().min(20, 'OpenAI API key required'),
 });
 
 // Validar y parsear
@@ -68,6 +71,9 @@ export const env = {
 
   // Logging
   LOG_LEVEL: parsed.data.LOG_LEVEL,
+
+  // OpenAI (AGREGAR AQUÍ AL FINAL)
+  OPENAI_API_KEY: parsed.data.OPENAI_API_KEY,
 };
 
 // Tipo exportado para usar en toda la app

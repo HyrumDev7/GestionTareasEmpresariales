@@ -6,6 +6,7 @@ import { env } from './config/env';
 import authRoutes from './routes/auth.routes';
 import projectRoutes from './routes/project.routes';
 import taskRoutes from './routes/task.routes';
+import aiRoutes from './routes/ai.routes';
 
 const app: Application = express();
 
@@ -59,6 +60,13 @@ app.get('/', (_req: Request, res: Response) => {
     health: '/health',
     endpoints: {
       auth: '/api/v1/auth',
+      projects: '/api/v1/projects',
+      tasks: '/api/v1/tasks',
+      ai: '/api/v1/ai',
+    },
+    features: {
+      aiPowered: true,
+      model: 'GPT-3.5-turbo',
     },
   });
 });
@@ -69,6 +77,7 @@ app.get('/', (_req: Request, res: Response) => {
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/projects', projectRoutes);
 app.use('/api/v1/tasks', taskRoutes);
+app.use('/api/v1/ai', aiRoutes);
 
 // ============================================
 // 404 HANDLER

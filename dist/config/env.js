@@ -20,6 +20,7 @@ const envSchema = zod_1.z.object({
     RATE_LIMIT_WINDOW_MS: zod_1.z.string().default('900000'),
     RATE_LIMIT_MAX_REQUESTS: zod_1.z.string().default('100'),
     LOG_LEVEL: zod_1.z.enum(['error', 'warn', 'info', 'debug']).default('info'),
+    OPENAI_API_KEY: zod_1.z.string().min(20, 'OpenAI API key required'),
 });
 const parsed = envSchema.safeParse(process.env);
 if (!parsed.success) {
@@ -43,5 +44,6 @@ exports.env = {
     RATE_LIMIT_WINDOW_MS: parseInt(parsed.data.RATE_LIMIT_WINDOW_MS, 10),
     RATE_LIMIT_MAX_REQUESTS: parseInt(parsed.data.RATE_LIMIT_MAX_REQUESTS, 10),
     LOG_LEVEL: parsed.data.LOG_LEVEL,
+    OPENAI_API_KEY: parsed.data.OPENAI_API_KEY,
 };
 //# sourceMappingURL=env.js.map
