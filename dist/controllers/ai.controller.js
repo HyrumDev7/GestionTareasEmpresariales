@@ -8,10 +8,11 @@ class AIController {
         try {
             const { userInput, projectId } = req.body;
             if (!userInput) {
-                return res.status(400).json({
+                res.status(400).json({
                     error: 'userInput is required',
                     message: 'Please provide text to generate a task',
                 });
+                return;
             }
             const taskData = await aiService.generateTaskFromText(userInput, projectId);
             res.status(200).json({
@@ -31,10 +32,11 @@ class AIController {
         try {
             const { projectDescription, count } = req.body;
             if (!projectDescription) {
-                return res.status(400).json({
+                res.status(400).json({
                     error: 'projectDescription is required',
                     message: 'Please provide a project description',
                 });
+                return;
             }
             const taskCount = count || 5;
             const suggestions = await aiService.suggestTasksForProject(projectDescription, taskCount);
@@ -54,9 +56,10 @@ class AIController {
         try {
             const { userInput } = req.body;
             if (!userInput) {
-                return res.status(400).json({
+                res.status(400).json({
                     error: 'userInput is required',
                 });
+                return;
             }
             const analysis = await aiService.analyzeInput(userInput);
             res.status(200).json({

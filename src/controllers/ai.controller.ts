@@ -4,18 +4,16 @@ import { AIService } from '../services/ai.service';
 const aiService = new AIService();
 
 export class AIController {
-  /**
-   * Genera tarea desde texto natural
-   */
-  async generateTask(req: Request, res: Response) {
+  async generateTask(req: Request, res: Response): Promise<void> {
     try {
       const { userInput, projectId } = req.body;
 
       if (!userInput) {
-        return res.status(400).json({
+        res.status(400).json({
           error: 'userInput is required',
           message: 'Please provide text to generate a task',
         });
+        return;
       }
 
       const taskData = await aiService.generateTaskFromText(userInput, projectId);
@@ -33,18 +31,16 @@ export class AIController {
     }
   }
 
-  /**
-   * Sugiere tareas para un proyecto
-   */
-  async suggestTasks(req: Request, res: Response) {
+  async suggestTasks(req: Request, res: Response): Promise<void> {
     try {
       const { projectDescription, count } = req.body;
 
       if (!projectDescription) {
-        return res.status(400).json({
+        res.status(400).json({
           error: 'projectDescription is required',
           message: 'Please provide a project description',
         });
+        return;
       }
 
       const taskCount = count || 5;
@@ -62,17 +58,15 @@ export class AIController {
     }
   }
 
-  /**
-   * Analiza input (útil para debugging)
-   */
-  async analyzeInput(req: Request, res: Response) {
+  async analyzeInput(req: Request, res: Response): Promise<void> {
     try {
       const { userInput } = req.body;
 
       if (!userInput) {
-        return res.status(400).json({
+        res.status(400).json({
           error: 'userInput is required',
         });
+        return;
       }
 
       const analysis = await aiService.analyzeInput(userInput);
