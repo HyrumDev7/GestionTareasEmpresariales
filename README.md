@@ -12,6 +12,7 @@ TaskMaster Pro es una API REST construida con Node.js, TypeScript y PostgreSQL q
 - 👥 **Sistema de roles** (ADMIN, MANAGER, USER)
 - 📁 **Gestión de proyectos** con CRUD completo
 - ✅ **Gestión de tareas** con asignación y prioridades
+- 🤖 **Integración con OpenAI** para generación inteligente de tareas
 - 🔒 **Seguridad** (bcrypt, helmet, CORS)
 - ✅ **Validación de datos** con Zod
 - 🗄️ **Base de datos** PostgreSQL con Prisma ORM
@@ -26,6 +27,7 @@ TaskMaster Pro es una API REST construida con Node.js, TypeScript y PostgreSQL q
 - **ORM:** Prisma
 - **Autenticación:** JWT + bcrypt
 - **Validación:** Zod
+- **IA:** OpenAI GPT-3.5-turbo
 - **Testing:** Jest + Supertest
 - **Containerización:** Docker + Docker Compose
 
@@ -58,6 +60,12 @@ npm install
 cp .env.example .env
 # Editar .env con tus valores
 ```
+
+**Variables importantes:**
+
+- `OPENAI_API_KEY`: Obtén tu API key de [OpenAI Platform](https://platform.openai.com/api-keys)
+- `DATABASE_URL`: URL de conexión a PostgreSQL
+- `JWT_SECRET` y `JWT_REFRESH_SECRET`: Claves secretas para JWT (mínimo 32 caracteres)
 
 4. **Levantar PostgreSQL con Docker**
 
@@ -99,6 +107,45 @@ El servidor estará disponible en: `http://localhost:3000`
 | PUT    | `/api/v1/projects/:id`       | Actualizar proyecto | ✅   |
 | DELETE | `/api/v1/projects/:id`       | Eliminar proyecto   | ✅   |
 | GET    | `/api/v1/projects/:id/stats` | Estadísticas        | ✅   |
+
+### Tasks
+
+| Método | Endpoint            | Descripción      | Auth |
+| ------ | ------------------- | ---------------- | ---- |
+| POST   | `/api/v1/tasks`     | Crear tarea      | ✅   |
+| GET    | `/api/v1/tasks`     | Listar tareas    | ✅   |
+| GET    | `/api/v1/tasks/:id` | Ver tarea        | ✅   |
+| PUT    | `/api/v1/tasks/:id` | Actualizar tarea | ✅   |
+| DELETE | `/api/v1/tasks/:id` | Eliminar tarea   | ✅   |
+
+### AI (OpenAI Integration)
+
+| Método | Endpoint                   | Descripción                                       | Auth |
+| ------ | -------------------------- | ------------------------------------------------- | ---- |
+| POST   | `/api/v1/ai/generate-task` | Genera tarea estructurada desde texto natural     | ✅   |
+| POST   | `/api/v1/ai/suggest-tasks` | Sugiere tareas basadas en descripción de proyecto | ✅   |
+| POST   | `/api/v1/ai/analyze`       | Analiza texto de entrada (debugging)              | ✅   |
+
+**Ejemplo de uso:**
+
+```bash
+# Generar tarea desde texto natural
+curl -X POST http://localhost:3000/api/v1/ai/generate-task \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userInput": "Revisar código del módulo de autenticación mañana, es urgente",
+    "projectId": "uuid-del-proyecto"
+  }'
+```
+
+**Características de la IA:**
+
+- ✅ Reconocimiento automático de prioridades (urgente, importante, etc.)
+- ✅ Interpretación de fechas relativas (mañana, próxima semana)
+- ✅ Estimación de tiempo cuando se menciona
+- ✅ Validación robusta de respuestas
+- ✅ Manejo completo de errores (rate limits, API key, etc.)
 
 ## 🏗️ Arquitectura
 
