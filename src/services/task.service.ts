@@ -51,18 +51,27 @@ export class TaskService {
   }
 
   /**
-   * Listar tareas con filtros
+   * Listar tareas con filtros, paginación y búsqueda
    */
   async findAll(
     userId: string,
     userRole: string,
-    filters?: {
+    options?: {
+      page?: number;
+      limit?: number;
       projectId?: string;
       status?: string;
       priority?: string;
       assignedToId?: string;
+      search?: string;
+      dueDateFrom?: string;
+      dueDateTo?: string;
     }
   ) {
+    const page = options?.page && options.page > 0 ? options.page : 1;
+    const limit = options?.limit && options.limit > 0 && options.limit <= 100 ? options.limit : 10;
+    const skip = (page - 1) * limit;
+
     const where: any = {};
 
     // Si no es ADMIN, solo ver tareas de sus proyectos o asignadas
@@ -71,11 +80,35 @@ export class TaskService {
     }
 
     // Aplicar filtros
-    if (filters?.projectId) where.projectId = filters.projectId;
-    if (filters?.status) where.status = filters.status;
-    if (filters?.priority) where.priority = filters.priority;
-    if (filters?.assignedToId) where.assignedToId = filters.assignedToId;
+    if (options?.projectId) where.projectId = options.projectId;
+    if (options?.status) where.status = options.status;
+    if (options?.priority) where.priority = options.priority;
+    if (options?.assignedToId) where.assignedToId = options.assignedToId;
 
+    // Filtro de búsqueda (título o descripción)
+    if (options?.search) {
+      where.OR = [
+        ...(where.OR || []),
+        { title: { contains: options.search, mode: 'insensitive' } },
+        { description: { contains: options.search, mode: 'insensitive' } },
+      ];
+    }
+
+    // Filtros de fecha
+    if (options?.dueDateFrom || options?.dueDateTo) {
+      where.dueDate = {};
+      if (options.dueDateFrom) {
+        where.dueDate.gte = new Date(options.dueDateFrom);
+      }
+      if (options.dueDateTo) {
+        where.dueDate.lte = new Date(options.dueDateTo);
+      }
+    }
+
+    // Obtener total para paginación
+    const total = await prisma.task.count({ where });
+
+    // Obtener tareas
     const tasks = await prisma.task.findMany({
       where,
       include: {
@@ -94,9 +127,21 @@ export class TaskService {
         },
       },
       orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
+      skip,
+      take: limit,
     });
 
-    return tasks;
+    return {
+      data: tasks,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   /**

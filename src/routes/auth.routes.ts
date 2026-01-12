@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import { validate } from '../middlewares/validation.middleware';
 import { authenticate } from '../middlewares/auth.middleware';
-import { registerSchema, loginSchema } from '../dtos/auth.dto';
+import { registerSchema, loginSchema, refreshTokenSchema } from '../dtos/auth.dto';
 
 const router = Router();
 const authController = new AuthController();
@@ -20,6 +20,15 @@ router.post('/register', validate(registerSchema), (req, res) => authController.
  * @access  Public
  */
 router.post('/login', validate(loginSchema), (req, res) => authController.login(req, res));
+
+/**
+ * @route   POST /api/v1/auth/refresh-token
+ * @desc    Refresh access token using refresh token
+ * @access  Public
+ */
+router.post('/refresh-token', validate(refreshTokenSchema), (req, res) =>
+  authController.refreshToken(req, res)
+);
 
 /**
  * @route   GET /api/v1/auth/me

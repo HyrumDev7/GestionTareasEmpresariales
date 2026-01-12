@@ -27,19 +27,33 @@ export class TaskController {
     try {
       const userId = req.user!.userId;
       const userRole = req.user!.role;
-      const { projectId, status, priority, assignedToId } = req.query;
+      
+      // Extraer query parameters
+      const page = req.query.page ? parseInt(req.query.page as string, 10) : undefined;
+      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+      const projectId = req.query.projectId as string | undefined;
+      const status = req.query.status as string | undefined;
+      const priority = req.query.priority as string | undefined;
+      const assignedToId = req.query.assignedToId as string | undefined;
+      const search = req.query.search as string | undefined;
+      const dueDateFrom = req.query.dueDateFrom as string | undefined;
+      const dueDateTo = req.query.dueDateTo as string | undefined;
 
-      const tasks = await taskService.findAll(userId, userRole, {
-        projectId: projectId as string,
-        status: status as string,
-        priority: priority as string,
-        assignedToId: assignedToId as string,
+      const result = await taskService.findAll(userId, userRole, {
+        page,
+        limit,
+        projectId,
+        status,
+        priority,
+        assignedToId,
+        search,
+        dueDateFrom,
+        dueDateTo,
       });
 
       res.status(200).json({
         message: 'Tasks retrieved successfully',
-        data: tasks,
-        count: tasks.length,
+        ...result,
       });
     } catch (error: any) {
       res.status(400).json({

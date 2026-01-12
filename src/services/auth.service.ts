@@ -105,4 +105,56 @@ export class AuthService {
 
     return user;
   }
+
+  /**
+   * Renovar access token usando refresh token
+   */
+  async refreshToken(refreshToken: string) {
+    try {
+      // Verificar el refresh token
+      const decoded = JWTUtil.verifyRefreshToken(refreshToken);
+
+      // Verificar que el usuario existe y está activo
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+        select: {
+          id: true,
+          email: true,
+          role: true,
+          isActive: true,
+        },
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      if (!user.isActive) {
+        throw new Error('Account is deactivated');
+      }
+
+      // Generar nuevos tokens
+      const newAccessToken = JWTUtil.generateAccessToken({
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      const newRefreshToken = JWTUtil.generateRefreshToken({
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+      };
+    } catch (error: any) {
+      if (error.message?.includes('refresh token')) {
+        throw new Error('Invalid or expired refresh token');
+      }
+      throw error;
+    }
+  }
 }
