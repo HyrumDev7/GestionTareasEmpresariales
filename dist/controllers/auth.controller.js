@@ -50,6 +50,30 @@ class AuthController {
             });
         }
     }
+    async refreshToken(req, res) {
+        try {
+            const { refreshToken } = req.body;
+            if (!refreshToken) {
+                res.status(400).json({
+                    error: 'Refresh token is required',
+                    message: 'Please provide a refresh token',
+                });
+                return;
+            }
+            const result = await authService.refreshToken(refreshToken);
+            res.status(200).json({
+                message: 'Token refreshed successfully',
+                data: result,
+            });
+        }
+        catch (error) {
+            const statusCode = error.message?.includes('Invalid') || error.message?.includes('expired') ? 401 : 400;
+            res.status(statusCode).json({
+                error: 'Token refresh failed',
+                message: error.message,
+            });
+        }
+    }
 }
 exports.AuthController = AuthController;
 //# sourceMappingURL=auth.controller.js.map

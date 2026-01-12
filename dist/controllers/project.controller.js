@@ -24,11 +24,19 @@ class ProjectController {
         try {
             const userId = req.user.userId;
             const userRole = req.user.role;
-            const projects = await projectService.findAll(userId, userRole);
+            const page = req.query.page ? parseInt(req.query.page, 10) : undefined;
+            const limit = req.query.limit ? parseInt(req.query.limit, 10) : undefined;
+            const status = req.query.status;
+            const search = req.query.search;
+            const result = await projectService.findAll(userId, userRole, {
+                page,
+                limit,
+                status,
+                search,
+            });
             res.status(200).json({
                 message: 'Projects retrieved successfully',
-                data: projects,
-                count: projects.length,
+                ...result,
             });
         }
         catch (error) {

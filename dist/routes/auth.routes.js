@@ -9,6 +9,7 @@ const router = (0, express_1.Router)();
 const authController = new auth_controller_1.AuthController();
 router.post('/register', (0, validation_middleware_1.validate)(auth_dto_1.registerSchema), (req, res) => authController.register(req, res));
 router.post('/login', (0, validation_middleware_1.validate)(auth_dto_1.loginSchema), (req, res) => authController.login(req, res));
+router.post('/refresh-token', (0, validation_middleware_1.validate)(auth_dto_1.refreshTokenSchema), (req, res) => authController.refreshToken(req, res));
 router.get('/me', auth_middleware_1.authenticate, (req, res) => authController.getMe(req, res));
 exports.default = router;
 //# sourceMappingURL=auth.routes.js.map

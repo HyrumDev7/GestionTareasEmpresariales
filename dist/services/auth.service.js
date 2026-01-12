@@ -90,6 +90,46 @@ class AuthService {
         }
         return user;
     }
+    async refreshToken(refreshToken) {
+        try {
+            const decoded = jwt_util_1.JWTUtil.verifyRefreshToken(refreshToken);
+            const user = await database_1.prisma.user.findUnique({
+                where: { id: decoded.userId },
+                select: {
+                    id: true,
+                    email: true,
+                    role: true,
+                    isActive: true,
+                },
+            });
+            if (!user) {
+                throw new Error('User not found');
+            }
+            if (!user.isActive) {
+                throw new Error('Account is deactivated');
+            }
+            const newAccessToken = jwt_util_1.JWTUtil.generateAccessToken({
+                userId: user.id,
+                email: user.email,
+                role: user.role,
+            });
+            const newRefreshToken = jwt_util_1.JWTUtil.generateRefreshToken({
+                userId: user.id,
+                email: user.email,
+                role: user.role,
+            });
+            return {
+                accessToken: newAccessToken,
+                refreshToken: newRefreshToken,
+            };
+        }
+        catch (error) {
+            if (error.message?.includes('refresh token')) {
+                throw new Error('Invalid or expired refresh token');
+            }
+            throw error;
+        }
+    }
 }
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

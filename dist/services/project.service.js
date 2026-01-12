@@ -25,8 +25,21 @@ class ProjectService {
         });
         return project;
     }
-    async findAll(userId, userRole) {
+    async findAll(userId, userRole, options) {
+        const page = options?.page && options.page > 0 ? options.page : 1;
+        const limit = options?.limit && options.limit > 0 && options.limit <= 100 ? options.limit : 10;
+        const skip = (page - 1) * limit;
         const where = userRole === 'ADMIN' ? {} : { ownerId: userId };
+        if (options?.status) {
+            where.status = options.status;
+        }
+        if (options?.search) {
+            where.OR = [
+                { name: { contains: options.search, mode: 'insensitive' } },
+                { description: { contains: options.search, mode: 'insensitive' } },
+            ];
+        }
+        const total = await database_1.prisma.project.count({ where });
         const projects = await database_1.prisma.project.findMany({
             where,
             include: {
@@ -50,8 +63,20 @@ class ProjectService {
             orderBy: {
                 createdAt: 'desc',
             },
+            skip,
+            take: limit,
         });
-        return projects;
+        return {
+            data: projects,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page < Math.ceil(total / limit),
+                hasPreviousPage: page > 1,
+            },
+        };
     }
     async findById(projectId, userId, userRole) {
         const project = await database_1.prisma.project.findUnique({
@@ -139,8 +164,15 @@ class ProjectService {
     }
     async getStats(projectId, userId, userRole) {
         await this.findById(projectId, userId, userRole);
-        const stats = await database_1.prisma.task.groupBy({
+        const statsByStatus = await database_1.prisma.task.groupBy({
             by: ['status'],
+            where: {
+                projectId,
+            },
+            _count: true,
+        });
+        const statsByPriority = await database_1.prisma.task.groupBy({
+            by: ['priority'],
             where: {
                 projectId,
             },
@@ -149,10 +181,52 @@ class ProjectService {
         const totalTasks = await database_1.prisma.task.count({
             where: { projectId },
         });
+        const completedTasks = await database_1.prisma.task.count({
+            where: {
+                projectId,
+                status: 'DONE',
+            },
+        });
+        const inProgressTasks = await database_1.prisma.task.count({
+            where: {
+                projectId,
+                status: 'IN_PROGRESS',
+            },
+        });
+        const overdueTasks = await database_1.prisma.task.count({
+            where: {
+                projectId,
+                dueDate: {
+                    lt: new Date(),
+                },
+                status: {
+                    not: 'DONE',
+                },
+            },
+        });
+        const urgentTasks = await database_1.prisma.task.count({
+            where: {
+                projectId,
+                priority: 'URGENT',
+                status: {
+                    not: 'DONE',
+                },
+            },
+        });
+        const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
         return {
             totalTasks,
-            byStatus: stats.reduce((acc, stat) => {
+            completedTasks,
+            inProgressTasks,
+            overdueTasks,
+            urgentTasks,
+            completionPercentage,
+            byStatus: statsByStatus.reduce((acc, stat) => {
                 acc[stat.status] = stat._count;
+                return acc;
+            }, {}),
+            byPriority: statsByPriority.reduce((acc, stat) => {
+                acc[stat.priority] = stat._count;
                 return acc;
             }, {}),
         };
