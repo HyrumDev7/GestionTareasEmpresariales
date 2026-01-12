@@ -24,7 +24,18 @@ export class AIController {
         usage: 'You can now create this task using POST /api/v1/tasks',
       });
     } catch (error: any) {
-      res.status(500).json({
+      // Detectar tipos específicos de errores para códigos HTTP apropiados
+      let statusCode = 500;
+      
+      if (error.message?.includes('API key') || error.message?.includes('invalid') || error.message?.includes('authentication')) {
+        statusCode = 401;
+      } else if (error.message?.includes('rate limit') || error.message?.includes('quota')) {
+        statusCode = 429;
+      } else if (error.message?.includes('temporarily unavailable')) {
+        statusCode = 503;
+      }
+
+      res.status(statusCode).json({
         error: 'Failed to generate task',
         message: error.message,
       });
@@ -51,7 +62,18 @@ export class AIController {
         data: suggestions,
       });
     } catch (error: any) {
-      res.status(500).json({
+      // Detectar tipos específicos de errores para códigos HTTP apropiados
+      let statusCode = 500;
+      
+      if (error.message?.includes('API key') || error.message?.includes('invalid') || error.message?.includes('authentication')) {
+        statusCode = 401;
+      } else if (error.message?.includes('rate limit') || error.message?.includes('quota')) {
+        statusCode = 429;
+      } else if (error.message?.includes('temporarily unavailable')) {
+        statusCode = 503;
+      }
+
+      res.status(statusCode).json({
         error: 'Failed to suggest tasks',
         message: error.message,
       });
@@ -76,7 +98,18 @@ export class AIController {
         data: { analysis },
       });
     } catch (error: any) {
-      res.status(500).json({
+      // Detectar tipos específicos de errores para códigos HTTP apropiados
+      let statusCode = 500;
+      
+      if (error.message?.includes('API key') || error.message?.includes('invalid') || error.message?.includes('authentication')) {
+        statusCode = 401;
+      } else if (error.message?.includes('rate limit') || error.message?.includes('quota')) {
+        statusCode = 429;
+      } else if (error.message?.includes('temporarily unavailable')) {
+        statusCode = 503;
+      }
+
+      res.status(statusCode).json({
         error: 'Analysis failed',
         message: error.message,
       });

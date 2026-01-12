@@ -22,7 +22,17 @@ class AIController {
             });
         }
         catch (error) {
-            res.status(500).json({
+            let statusCode = 500;
+            if (error.message?.includes('API key') || error.message?.includes('invalid') || error.message?.includes('authentication')) {
+                statusCode = 401;
+            }
+            else if (error.message?.includes('rate limit') || error.message?.includes('quota')) {
+                statusCode = 429;
+            }
+            else if (error.message?.includes('temporarily unavailable')) {
+                statusCode = 503;
+            }
+            res.status(statusCode).json({
                 error: 'Failed to generate task',
                 message: error.message,
             });
@@ -46,7 +56,17 @@ class AIController {
             });
         }
         catch (error) {
-            res.status(500).json({
+            let statusCode = 500;
+            if (error.message?.includes('API key') || error.message?.includes('invalid') || error.message?.includes('authentication')) {
+                statusCode = 401;
+            }
+            else if (error.message?.includes('rate limit') || error.message?.includes('quota')) {
+                statusCode = 429;
+            }
+            else if (error.message?.includes('temporarily unavailable')) {
+                statusCode = 503;
+            }
+            res.status(statusCode).json({
                 error: 'Failed to suggest tasks',
                 message: error.message,
             });
@@ -68,7 +88,17 @@ class AIController {
             });
         }
         catch (error) {
-            res.status(500).json({
+            let statusCode = 500;
+            if (error.message?.includes('API key') || error.message?.includes('invalid') || error.message?.includes('authentication')) {
+                statusCode = 401;
+            }
+            else if (error.message?.includes('rate limit') || error.message?.includes('quota')) {
+                statusCode = 429;
+            }
+            else if (error.message?.includes('temporarily unavailable')) {
+                statusCode = 503;
+            }
+            res.status(statusCode).json({
                 error: 'Analysis failed',
                 message: error.message,
             });
