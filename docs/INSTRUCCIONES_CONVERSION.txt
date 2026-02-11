@@ -1,0 +1,23 @@
+
+# Instrucciones para convertir Markdown a Word
+
+## Opción 1: Usar Pandoc (Recomendado)
+
+1. Instala Pandoc desde: https://pandoc.org/installing.html
+2. Ejecuta este comando:
+   pandoc "docs/PROYECTO_TASK_MASTER_COMPLETO.md" -o "docs/Proyecto Task Master.docx"
+
+## Opción 2: Usar herramienta online
+
+1. Abre: https://www.markdowntoword.com/
+2. Sube el archivo: docs/PROYECTO_TASK_MASTER_COMPLETO.md
+3. Descarga el archivo .docx generado
+4. Reemplaza: docs/Proyecto Task Master.docx
+
+## Opción 3: Copiar y pegar
+
+1. Abre docs/PROYECTO_TASK_MASTER_COMPLETO.md
+2. Copia todo el contenido
+3. Pégalo en Word
+4. Ajusta el formato según necesites
+      

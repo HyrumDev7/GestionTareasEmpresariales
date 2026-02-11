@@ -2,7 +2,10 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
 import { env } from './config/env';
+import { generalRateLimiter } from './middlewares/rateLimit.middleware';
+import { swaggerSpec } from './config/swagger';
 import authRoutes from './routes/auth.routes';
 import projectRoutes from './routes/project.routes';
 import taskRoutes from './routes/task.routes';
@@ -31,6 +34,11 @@ if (env.IS_DEVELOPMENT) {
 }
 
 // ============================================
+// RATE LIMITING
+// ============================================
+app.use(generalRateLimiter);
+
+// ============================================
 // BODY PARSERS
 // ============================================
 app.use(express.json());
@@ -48,6 +56,18 @@ app.get('/health', (_req: Request, res: Response) => {
     database: 'connected',
   });
 });
+
+// ============================================
+// SWAGGER DOCUMENTATION
+// ============================================
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'TaskMaster Pro API Documentation',
+  })
+);
 
 // ============================================
 // API ROOT

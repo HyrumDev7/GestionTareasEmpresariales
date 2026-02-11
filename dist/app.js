@@ -7,7 +7,10 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const env_1 = require("./config/env");
+const rateLimit_middleware_1 = require("./middlewares/rateLimit.middleware");
+const swagger_1 = require("./config/swagger");
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const project_routes_1 = __importDefault(require("./routes/project.routes"));
 const task_routes_1 = __importDefault(require("./routes/task.routes"));
@@ -24,6 +27,7 @@ if (env_1.env.IS_DEVELOPMENT) {
 else {
     app.use((0, morgan_1.default)('combined'));
 }
+app.use(rateLimit_middleware_1.generalRateLimiter);
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.get('/health', (_req, res) => {
@@ -35,6 +39,10 @@ app.get('/health', (_req, res) => {
         database: 'connected',
     });
 });
+app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'TaskMaster Pro API Documentation',
+}));
 app.get('/', (_req, res) => {
     res.json({
         message: '🚀 TaskMaster Pro API',
