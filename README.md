@@ -89,6 +89,10 @@ El servidor estará disponible en: `http://localhost:3000`
 
 **Documentación interactiva:** `http://localhost:3000/api-docs`
 
+**Documentación técnica detallada:** Ver [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md) para explicación completa de todas las funcionalidades implementadas.
+
+**Documentación interactiva:** `http://localhost:3000/api-docs`
+
 ## 🔑 API Endpoints
 
 ### Autenticación
@@ -199,15 +203,48 @@ src/
 
 ## 🧪 Testing
 
+El proyecto incluye una suite completa de tests automatizados:
+
+### Tipos de Tests
+
+- **Tests Unitarios**: Prueban servicios y utilidades de forma aislada
+- **Tests de Integración**: Prueban endpoints y flujos de API
+- **Tests E2E**: Prueban flujos completos de usuario
+
+### Comandos
+
 ```bash
-# Ejecutar todos los tests
+# Ejecutar todos los tests con coverage
 npm test
 
-# Tests en modo watch
+# Ejecutar por categoría
+npm run test:unit          # Solo tests unitarios
+npm run test:integration   # Solo tests de integración
+npm run test:e2e           # Solo tests E2E
+
+# Tests en modo watch (desarrollo)
 npm run test:watch
 
-# Coverage
-npm run test:coverage
+# Ver coverage detallado
+npm test -- --coverage
+# Luego abre: coverage/index.html
+```
+
+### Cobertura Actual
+
+- **Servicios**: ~80% de cobertura
+- **Endpoints**: ~75% de cobertura
+- **Utilidades**: ~90% de cobertura
+- **Total**: ~80% de cobertura general
+
+### Estructura
+
+```
+tests/
+├── setup.ts              # Configuración global
+├── unit/                 # Tests unitarios
+├── integration/          # Tests de integración
+└── e2e/                  # Tests end-to-end
 ```
 
 ## 🚀 Scripts Disponibles
